@@ -1,0 +1,328 @@
+--> Recap:-
+	o Counters:-
+		o Counters are used for the counting purpose based on the clock signal
+		o mainly we have up_counter, down_counter & up_down_counter
+			- modn_upcounter
+			- modn_down counter
+			- modn up_down_counter
+			- Ring counter
+			- Jhonson counter
+
+===============================================================================
+
+--> Today's Agenda:-
+	o Memory
+		- memory Design imple
+		- memory test_bench
+		- memory test_bench with front_door testcases
+		- memory test_bench with back_door testcases
+
+--> Memory:-
+	o Memory is a storage element which stores the data inside it
+	o Memory can able declare with the help of "Array of Vectors"
+		reg [7:0] mem [15:0];
+	- Summary:-
+		- the above memory declaration refers to we have 16 memory locations, in each memory location we can able to store 8bits of data
+	
+	- while representing the memory we need to identify the "b/B"
+		- b :- bits format
+		- B :- Bytes format
+	- bit - 1
+	- nibble - 4bits
+	- byte - 8 bits
+
+	- 1Kb --> 1024 bits 	--> 2**10
+		- 1KB --> 1024*8 bytes
+	
+	- 1Mb --> 1024*1024 bits  --> 2**20
+		- 1MB --> 1024*1024*8 bytes
+		1MB - 1024KB
+	
+	- 1Gb --> 1024*1024*1024 --> 2**30
+		- 1GB --> 1024*1024*1024*8 
+		1GB - 1024MB
+	
+
+	- 1Tb --> 1024*1024*1024*1024 --> 2**40
+		- 1TB --> 1024*1024*1024*1024*8
+		- 1TB - 1024GB
+
+--> Memory Calculation  Formulas:-
+	1. Size = WIDTH * DEPTH
+
+					SIZE
+	2. => WIDTH = ----------
+				  	DEPTH
+
+					SIZE
+	3. => DEPTH = ----------
+				  	WIDTH	
+
+Q. What is the size of the below memory allocation?
+	reg [7:0] mem [15:0];
+	reg [WIDTH:0] mem [DEPTH:0];
+	
+Formula:-
+	Size = WIDTH * DEPTH
+
+--> Substitute the values
+	Size = 8 * 16
+	Size = 128 bits of data it can able to store
+
+Q. What is the size of the below memory allocation?
+	reg [15:0] mem [63:0];
+
+	Size = WIDTH * DEPTH
+	Size = 16 * 64
+	Size = 1024bits ==> 2**10 (it refers to 1Kb of data)
+
+Q. find the WIDTH = ? Size = 500Mb Depth = 64loc
+	
+				   SIZE
+	=> WIDTH = -------------
+				  DEPTH
+		
+
+	=> WIDTH = 500*1024*1024 /64
+				= 52,42,88,000 / 64 ==> 81,92,000 
+		
+		reg [8191999:0] mem [63:0]; 
+
+Q. find the WIDTH = ? Size = 500Mb Depth = 1024loc
+	
+	=> WIDTH = 500*1024*1024 /64
+			= 52,42,88,000 / 1024 ==> 512000 
+
+		reg [511999:0] mem [1023:0]; 
+
+Q. find the DEPTH = ? Size = 250Mb WIDTH = 512loc
+
+				   SIZE
+	=> DEPTH = -------------
+				  	WIDTH
+
+	DEPTH = 250*1024*1024 /512
+			= 250*2**20/512
+		26,21,44,000/512
+			=> 512000
+
+		reg [511:0] mem [511999:0]; 
+
+-------------------------------------------------------------------------------------------------
+--> signal description for the memory:-
+
+	o if we wants to send the data from one system to another system 1st we need to require the memory
+	o Memory:- it is a storage element which is used to store the data inside it
+		o we can able to store the files, doc, xlx,pdf,ppt,mp3,mp4,etc,..
+	o signals required for the Memory:-
+		- clock
+		- reset
+		- wr_rd_enable
+		- address
+		- write_data (wdata)
+		- read_data (rdata)
+		- valid
+		- ready
+
+--> clock:-
+	o clock is a periodic signal which is toggles b/w the 0 & 1 till end of the simulation 
+	o based on the clock signal only all the electronic devices are working
+	o with the help of the clk all the electronic ckts will analize time concept
+
+--> reset:-
+	o it used to come the data from unknown state to known state 
+	o by default every component in ckt is build with the flip_flops & registers, for this default value of the register is "X", this "x" refers to unknown state
+		- to comming from the unknown state to known state we are using the reset signal
+	o whenver we are appling the reset signal all the design outputs & reg/internal signals need to be "0" in design, 
+		- while appling  the reset in testbench all the design inputs need to be "0"
+
+--> wr_rd_enable:-
+	o it will acts as a switching opereation
+	o it has two modes 
+		i. write_mode/operation
+		ii. Read_mode/operation
+	o if wr_rd == 1 then it will do the write operation to the Memory
+		- store the data inside the memory
+	o if wr_rd == 0 :- then will do the read operation, get the data from the memory
+
+--> address:-
+	o to store the data inside the memory we requires some addr locations 
+	o that addr will be passed by this addr signal
+	ex:-
+		- whatever the theory.txt i'm imple now for there is an addr
+		-->	C:\Users\inski\OneDrive\Desktop\UDAY\B2_26Hyd\25-03-2026
+		-->	C:\Users\inski\OneDrive\Desktop\UDAY\B2_26Hyd\27-04-2026
+
+--> write_data (wdata)
+	o whenever the wr_rd =1, then address will issue based on the address location i can able to write the data in it
+	analogy:-
+		o i have a an 8Gb of pendrive(UDAY_8GB)
+			- in pendrive there are 6 folders | photos | music | videos | documents | pdf | verilog |
+				- verilog/assignments
+				- UDAY_8GB/verilog/assignments/Assignment_5/Q6
+
+--> read_data (rdata)
+	o which refers to copy the data from the pendrive
+		- requirement Assignment_4/Q15
+				- UDAY_8GB/verilog/assignments/Assignment_4/Q15
+	movies
+		- UDAY_8GB/videos/Old_movies/arya
+		i.Old_movies
+			o arya 
+		ii.New_movies
+			o OG
+			o Pushpa
+		- UDAY_8GB/videos/New_movies/Pushpa
+
+--> valid
+	o it is asserted by the processor which tells about process is ready to send the data to memory or reterive the data from the memory 
+	o process sent an request to the memory
+
+--> ready:-
+	o it is asserted by the memory, which informs as memory is also ready to either get the data or sent the data 
+	o slave is giving response to the processor
+
+--> Signlas WRT Memory:-
+
+	module memory(clk_i,rst_i,wr_rd_i,addr_i,wdata_i,rdata_o,valid_i,ready_o);
+		input clk_i,rst_i;
+		input wr_rd_i;
+		input [31:0] addr_i;
+		input [31:0] wdata_i;
+		output reg [31:0] rdata_o;
+		input valid_i;
+		output reg ready_o;
+	endmodule
+
+--> For detail explination  pls gothrough 25/03/2026 session
+
+HW:-
+	- imple the testbench for the design 
+	- write the data into the memory & read the data from the memory
+
+===========================================================================================================
+date:- 28/04/2026
+	--> Today's Agenda:-
+		o steps to imple the Design & test bench
+		o imple the write & read task for the memory
+		o imple of testcases for the memory
+			- test_1wr
+			- test_5wr
+			- test_nwr
+			- test_1wr_1rd
+			- test_5wr_5rd
+			- test_nwr_nrd
+			- test_1st_portion_write
+			- test_1st_portion_write_read
+			- test_upto_2nd_portion_write
+			- test_upto_2st_portion_write_read
+			- test_upto_3rd_portion_write
+			- test_upto_3st_portion_write_read
+			- test_upto_4th_portion_write
+			- test_upto_4th_portion_write_read
+			- test_only_2nd_portion_write
+			- test_only_2st_portion_write_read
+			- test_only_3rd_portion_write
+			- test_only_3st_portion_write_read
+			- test_only_4th_portion_write
+			- test_only_4th_portion_write_read
+
+			- test_front_door_write_front_door_read
+			- test_front_door_write_back_door_read
+			- test_back_door_write_front_door_read
+			- test_back_door_write_back_door_read
+
+--> steps to imple the Design & test bench:-
+	1. Write the module module_name(ports for the module) & endmodule
+		ex:- module memory(clk_i,rst_i,wr_rd_i,addr_i,wdata_i,rdata_o,valid_i,ready_o);
+
+	2. Declare the required paremeters for the design / insted of parameters we can able to use the Macros also
+		parameter DEPTH = 16;
+		parameter WIDTH = 8;
+		parameter ADDR_WIDTH= $clog2(DEPTH);
+
+	3. Seperate the input & output ports of the design 
+		- identify the scalar & vector signals in the design_signal list
+		- scalar signals are :- 
+			input scalar signals "clk_i,rst_i,wr_rd_i,valid_i"
+			output scalar signals "ready_o"
+			input vector signals "addr_i,wdata_i"
+			output vector signals "rdata_o"
+	
+	4. Declare the memory for the design imple as "Array of vectors" & if any internal signals also required jst declare it.
+		ex:- reg [7:0] mem [15:0];
+			 reg [WIDTH-1:0] mem [DEPTH-1:0];
+
+	5. from here onwards we need to imple the actual logic of the desgin imple, as it a sequential ckt we need to use the always block followed with the +ve or -ve edge triggering 
+
+	6. Imple the logic for while appling the reset, whenever we are appling the reset all the "Design output signals & Design internal signals" need to make it as a "0"
+		- y bcz those all are declared it as reg type, default value for the reg is "X" it indicates unknown states to avoid the unknown states we are making it as a "0"
+		- the main functionality of the reset is comming out form the unknown states to known state
+
+	7. while releasing the reset need to imple the actual functionality of the design
+		i. 1st we need to check about the hand_shanking is happening fine or not 
+			- both valid & redy is becomming 1 or not, if both are 1 it info's handshanking is fine
+		ii. once design & testbench are done with the handshanking now we need to check for the wr_rd_enable
+		iii. if wr_rd_enable == 1; need to perform the write operation to the memory based on the address loc
+			- if wr_rd_enable ==0; need to perform the read operation from the memory based on the address loc 
+
+	8. if valid is "0" then ur ready should be "0"
+	
+NOTE:- here there is an delay b/w the valid & ready is one edge of the clock
+
+--> Steps to imple memory_testbench:-
+	1. include the design file inside the testbench file, write the module & endmodule 
+		ex:- `include "memory.v"
+			module top;
+			endmodule
+
+	2. declare the paramters & design input signals as "reg" type output signals as "wire" type
+		parameter DEPTH = 16;
+		parameter WIDTH = 8;
+		parameter ADDR_WIDTH= $clog2(DEPTH);
+
+	3. do the dut port connections (while working on the project need to prefer the connection by name only)
+		ex:- memory #(.DEPTH(DEPTH),.WIDTH(WIDTH)) dut(
+														.clk_i		(clk_i),
+														.rst_i		(rst_i),
+														.wr_rd_i	(wr_rd_i),
+														.addr_i		(addr_i),
+														.wdata_i	(wdata_i),
+														.rdata_o	(rdata_o),
+														.valid_i	(valid_i),
+														.ready_o	(ready_o));
+	4. Generate the clock with some random frequency 
+		- freq = 100mhz
+	
+	5. appling & releasing the reset
+
+	6. imple the task for the write the data into the memory & read the data from the memory
+		task write_mem();
+			begin 
+				for(i=0; i<DEPTH; i=i+1)begin 
+					@(posedge clk_i);
+					valid_i = 1;
+					wait(ready_o==1);
+					wr_rd_i = 1;
+					addr_i = i; // 0 1 2 3 4 5 .... DEPTH no.of loc
+					wdata_i =  $random();
+				end
+					@(posedge clk_i);
+					valid_i = 0;
+					wr_rd_i = 0;
+					addr_i = 0;
+					wdata_i = 0;
+			end
+		endtask
+		
+	7. once done with the imple of write task call it after the realising the reset
+
+	8. end the simulation
+
+=============================================================================
+exp_op for memory backdoor access:-
+	
+	ABCD ==> 1010_1011_1100_1101 
+	B123 ==> 1011_0001_0010_0011
+	A986 ==> 1010_1001_1000_0110
+	BDEF ==> 1011_1101_1110_1111
