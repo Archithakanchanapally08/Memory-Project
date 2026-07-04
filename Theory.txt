@@ -1,18 +1,4 @@
---> Recap:-
-	o Counters:-
-		o Counters are used for the counting purpose based on the clock signal
-		o mainly we have up_counter, down_counter & up_down_counter
-			- modn_upcounter
-			- modn_down counter
-			- modn up_down_counter
-			- Ring counter
-			- Jhonson counter
-
-===============================================================================
-
---> Today's Agenda:-
-	o Memory
-		- memory Design imple
+- memory Design imple
 		- memory test_bench
 		- memory test_bench with front_door testcases
 		- memory test_bench with back_door testcases
